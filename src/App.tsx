@@ -64,6 +64,15 @@ export default function App() {
     setCurrentScreen(screen);
   };
 
+  const updateUserPoints = (points: number) => {
+    if (user) {
+      setUser({
+        ...user,
+        totalPoints: user.totalPoints + points
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Mobile App Container */}
@@ -89,6 +98,7 @@ export default function App() {
           <QuizScreen 
             user={user} 
             onNavigate={navigateToScreen}
+            onUpdatePoints={updateUserPoints}
           />
         )}
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, BookOpen, Video, FileText, Clock, Star, TrendingUp } from 'lucide-react';
+import { Search, Volume2, Star, Trophy, Sparkles } from 'lucide-react';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
 import { User, Screen } from '../App';
@@ -9,113 +9,52 @@ interface ContentScreenProps {
   onNavigate: (screen: Screen) => void;
 }
 
-interface Course {
-  id: string;
-  title: string;
-  category: string;
-  duration: string;
-  lessons: number;
-  progress: number;
-  rating: number;
-  thumbnail: string;
-  type: 'video' | 'reading' | 'interactive';
-}
+type Category = 'alphabets' | 'numbers';
 
-const courses: Course[] = [
-  {
-    id: '1',
-    title: 'Introduction to Mathematics',
-    category: 'Mathematics',
-    duration: '4 hours',
-    lessons: 12,
-    progress: 65,
-    rating: 4.8,
-    thumbnail: '📐',
-    type: 'video'
-  },
-  {
-    id: '2',
-    title: 'English Grammar Basics',
-    category: 'English',
-    duration: '3 hours',
-    lessons: 10,
-    progress: 40,
-    rating: 4.6,
-    thumbnail: '📚',
-    type: 'reading'
-  },
-  {
-    id: '3',
-    title: 'Science Experiments',
-    category: 'Science',
-    duration: '5 hours',
-    lessons: 15,
-    progress: 20,
-    rating: 4.9,
-    thumbnail: '🔬',
-    type: 'interactive'
-  },
-  {
-    id: '4',
-    title: 'World History',
-    category: 'History',
-    duration: '6 hours',
-    lessons: 18,
-    progress: 0,
-    rating: 4.7,
-    thumbnail: '🌍',
-    type: 'reading'
-  },
-  {
-    id: '5',
-    title: 'Creative Writing',
-    category: 'English',
-    duration: '4 hours',
-    lessons: 11,
-    progress: 0,
-    rating: 4.5,
-    thumbnail: '✍️',
-    type: 'reading'
-  },
-  {
-    id: '6',
-    title: 'Physics Fundamentals',
-    category: 'Science',
-    duration: '7 hours',
-    lessons: 20,
-    progress: 0,
-    rating: 4.8,
-    thumbnail: '⚡',
-    type: 'video'
-  }
-];
-
-const categories = ['All', 'Mathematics', 'Science', 'English', 'History'];
+const alphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const numbers = Array.from({ length: 100 }, (_, i) => i + 1);
 
 export function ContentScreen({ user, onNavigate }: ContentScreenProps) {
+  const [selectedCategory, setSelectedCategory] = useState<Category>('alphabets');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const filteredCourses = courses.filter(course => {
-    const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         course.category.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || course.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const speak = (text: string) => {
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.8; // Slower speed for kids
+    utterance.pitch = 1.2; // Slightly higher pitch for friendly voice
+    utterance.volume = 1;
+    
+    window.speechSynthesis.speak(utterance);
+  };
 
-  const inProgressCourses = courses.filter(c => c.progress > 0 && c.progress < 100);
+  const filteredAlphabets = alphabets.filter(letter =>
+    letter.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredNumbers = numbers.filter(num =>
+    num.toString().includes(searchQuery)
+  );
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 pb-24">
       {/* Header */}
-      <div className="bg-gradient-to-br from-blue-600 to-purple-600 px-6 pt-8 pb-6 rounded-b-3xl">
+      <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 px-6 pt-8 pb-6 rounded-b-3xl">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <p className="text-blue-100 text-sm">Welcome back,</p>
+            <p className="text-white/90 text-sm flex items-center gap-2">
+              <Sparkles className="size-4" />
+              Hello,
+            </p>
             <h2 className="text-white text-2xl">{user.name}</h2>
           </div>
-          <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
-            <TrendingUp className="size-6 text-white" />
+          <div className="bg-white/20 backdrop-blur-sm rounded-2xl px-4 py-2">
+            <div className="flex items-center gap-2">
+              <Trophy className="size-5 text-yellow-300" />
+              <span className="text-white">{user.totalPoints}</span>
+            </div>
           </div>
         </div>
 
@@ -124,126 +63,148 @@ export function ContentScreen({ user, onNavigate }: ContentScreenProps) {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400" />
           <Input
             type="text"
-            placeholder="Search courses..."
+            placeholder="Search..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 bg-white border-0 shadow-lg"
+            className="pl-12 bg-white border-0 shadow-lg rounded-2xl"
           />
         </div>
       </div>
 
       {/* Content */}
       <div className="px-6 py-6 space-y-6">
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
-            <div className="text-blue-600 text-2xl mb-1">{user.coursesCompleted}</div>
-            <div className="text-slate-600 text-xs">Completed</div>
+        {/* Fun Stats */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-gradient-to-br from-yellow-400 to-orange-400 rounded-2xl p-4 shadow-lg text-center">
+            <div className="text-3xl mb-1">⭐</div>
+            <div className="text-white text-xl">{user.totalPoints}</div>
+            <div className="text-white/90 text-xs">Points</div>
           </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
-            <div className="text-purple-600 text-2xl mb-1">{inProgressCourses.length}</div>
-            <div className="text-slate-600 text-xs">In Progress</div>
+          <div className="bg-gradient-to-br from-green-400 to-emerald-400 rounded-2xl p-4 shadow-lg text-center">
+            <div className="text-3xl mb-1">🎯</div>
+            <div className="text-white text-xl">{user.coursesCompleted}</div>
+            <div className="text-white/90 text-xs">Learned</div>
           </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
-            <div className="text-orange-600 text-2xl mb-1">{user.totalPoints}</div>
-            <div className="text-slate-600 text-xs">Points</div>
+          <div className="bg-gradient-to-br from-blue-400 to-purple-400 rounded-2xl p-4 shadow-lg text-center">
+            <div className="text-3xl mb-1">🏆</div>
+            <div className="text-white text-xl">7</div>
+            <div className="text-white/90 text-xs">Day Streak</div>
           </div>
         </div>
 
-        {/* Continue Learning */}
-        {inProgressCourses.length > 0 && (
+        {/* Category Selection */}
+        <div>
+          <h3 className="text-slate-900 mb-3 flex items-center gap-2">
+            <Sparkles className="size-5 text-purple-500" />
+            <span>Choose What to Learn</span>
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setSelectedCategory('alphabets')}
+              className={`p-6 rounded-3xl transition-all ${
+                selectedCategory === 'alphabets'
+                  ? 'bg-gradient-to-br from-pink-500 to-rose-500 text-white shadow-xl scale-105'
+                  : 'bg-white text-slate-700 shadow-sm'
+              }`}
+            >
+              <div className="text-4xl mb-2">🔤</div>
+              <div className="text-lg">Alphabets</div>
+              <div className="text-sm opacity-90">A to Z</div>
+            </button>
+            <button
+              onClick={() => setSelectedCategory('numbers')}
+              className={`p-6 rounded-3xl transition-all ${
+                selectedCategory === 'numbers'
+                  ? 'bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-xl scale-105'
+                  : 'bg-white text-slate-700 shadow-sm'
+              }`}
+            >
+              <div className="text-4xl mb-2">🔢</div>
+              <div className="text-lg">Numbers</div>
+              <div className="text-sm opacity-90">1 to 100</div>
+            </button>
+          </div>
+        </div>
+
+        {/* Alphabets Section */}
+        {selectedCategory === 'alphabets' && (
           <div>
-            <h3 className="text-slate-900 mb-3">Continue Learning</h3>
-            <div className="space-y-3">
-              {inProgressCourses.map(course => (
-                <div key={course.id} className="bg-white rounded-2xl p-4 shadow-sm">
-                  <div className="flex gap-4">
-                    <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl size-16 flex items-center justify-center text-3xl flex-shrink-0">
-                      {course.thumbnail}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-slate-900 mb-1 truncate">{course.title}</h4>
-                      <p className="text-slate-600 text-sm mb-2">{course.category}</p>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-slate-200 rounded-full h-2">
-                          <div 
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full"
-                            style={{ width: `${course.progress}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-slate-600 text-xs">{course.progress}%</span>
-                      </div>
-                    </div>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-slate-900 flex items-center gap-2">
+                <span className="text-2xl">🔤</span>
+                <span>Learn Alphabets</span>
+              </h3>
+              <Badge className="bg-pink-500">
+                {filteredAlphabets.length} letters
+              </Badge>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {filteredAlphabets.map((letter) => (
+                <button
+                  key={letter}
+                  onClick={() => speak(letter)}
+                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95 group"
+                >
+                  <div className="text-5xl mb-2 group-hover:scale-110 transition-transform">
+                    {letter}
                   </div>
-                </div>
+                  <div className="flex items-center justify-center gap-1 text-pink-500">
+                    <Volume2 className="size-4" />
+                    <span className="text-xs">Tap to hear</span>
+                  </div>
+                </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* Categories */}
-        <div>
-          <h3 className="text-slate-900 mb-3">Categories</h3>
-          <div className="flex gap-2 overflow-x-auto pb-2 -mx-6 px-6 scrollbar-hide">
-            {categories.map(category => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
-                  selectedCategory === category
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-slate-600 border border-slate-200'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* All Courses */}
-        <div>
-          <h3 className="text-slate-900 mb-3">Explore Courses</h3>
-          <div className="grid grid-cols-1 gap-4">
-            {filteredCourses.map(course => (
-              <div key={course.id} className="bg-white rounded-2xl overflow-hidden shadow-sm">
-                <div className="p-4">
-                  <div className="flex gap-4 mb-3">
-                    <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl size-20 flex items-center justify-center text-4xl flex-shrink-0">
-                      {course.thumbnail}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-slate-900 mb-1">{course.title}</h4>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="secondary" className="text-xs">
-                          {course.category}
-                        </Badge>
-                        <div className="flex items-center gap-1">
-                          <Star className="size-3 fill-yellow-400 text-yellow-400" />
-                          <span className="text-slate-600 text-xs">{course.rating}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4 text-slate-500 text-xs">
-                        <div className="flex items-center gap-1">
-                          {course.type === 'video' && <Video className="size-3" />}
-                          {course.type === 'reading' && <FileText className="size-3" />}
-                          {course.type === 'interactive' && <BookOpen className="size-3" />}
-                          <span>{course.lessons} lessons</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="size-3" />
-                          <span>{course.duration}</span>
-                        </div>
-                      </div>
-                    </div>
+        {/* Numbers Section */}
+        {selectedCategory === 'numbers' && (
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-slate-900 flex items-center gap-2">
+                <span className="text-2xl">🔢</span>
+                <span>Learn Numbers</span>
+              </h3>
+              <Badge className="bg-blue-500">
+                {filteredNumbers.length} numbers
+              </Badge>
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {filteredNumbers.map((num) => (
+                <button
+                  key={num}
+                  onClick={() => speak(num.toString())}
+                  className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95 group"
+                >
+                  <div className="text-2xl mb-1 group-hover:scale-110 transition-transform">
+                    {num}
                   </div>
-                  <button className="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-colors">
-                    {course.progress > 0 ? 'Continue' : 'Start Course'}
-                  </button>
-                </div>
-              </div>
-            ))}
+                  <div className="flex items-center justify-center text-blue-500">
+                    <Volume2 className="size-3" />
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
+        )}
+
+        {/* Quick Actions */}
+        <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-6 shadow-xl text-white">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="text-4xl">🎮</div>
+            <div>
+              <h3 className="text-xl mb-1">Ready for a Quiz?</h3>
+              <p className="text-white/90 text-sm">Test what you learned and earn stars!</p>
+            </div>
+          </div>
+          <button
+            onClick={() => onNavigate('quiz')}
+            className="w-full bg-white text-purple-600 py-3 rounded-2xl hover:bg-white/90 transition-colors flex items-center justify-center gap-2"
+          >
+            <Star className="size-5 fill-yellow-400 text-yellow-400" />
+            <span>Start Quiz</span>
+          </button>
         </div>
       </div>
     </div>
