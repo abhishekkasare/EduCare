@@ -11,8 +11,68 @@ interface ContentScreenProps {
 
 type Category = 'alphabets' | 'numbers';
 
-const alphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-const numbers = Array.from({ length: 100 }, (_, i) => i + 1);
+// Alphabet with associated objects
+const alphabetsWithImages = [
+  { letter: 'A', word: 'Apple', emoji: '🍎', color: 'from-red-400 to-red-600' },
+  { letter: 'B', word: 'Ball', emoji: '⚽', color: 'from-blue-400 to-blue-600' },
+  { letter: 'C', word: 'Cat', emoji: '🐱', color: 'from-orange-400 to-orange-600' },
+  { letter: 'D', word: 'Dog', emoji: '🐕', color: 'from-amber-400 to-amber-600' },
+  { letter: 'E', word: 'Elephant', emoji: '🐘', color: 'from-gray-400 to-gray-600' },
+  { letter: 'F', word: 'Fish', emoji: '🐟', color: 'from-cyan-400 to-cyan-600' },
+  { letter: 'G', word: 'Grapes', emoji: '🍇', color: 'from-purple-400 to-purple-600' },
+  { letter: 'H', word: 'House', emoji: '🏠', color: 'from-rose-400 to-rose-600' },
+  { letter: 'I', word: 'Ice Cream', emoji: '🍦', color: 'from-pink-400 to-pink-600' },
+  { letter: 'J', word: 'Juice', emoji: '🧃', color: 'from-yellow-400 to-yellow-600' },
+  { letter: 'K', word: 'Kite', emoji: '🪁', color: 'from-indigo-400 to-indigo-600' },
+  { letter: 'L', word: 'Lion', emoji: '🦁', color: 'from-orange-400 to-orange-600' },
+  { letter: 'M', word: 'Monkey', emoji: '🐵', color: 'from-amber-400 to-amber-600' },
+  { letter: 'N', word: 'Nest', emoji: '🪹', color: 'from-emerald-400 to-emerald-600' },
+  { letter: 'O', word: 'Orange', emoji: '🍊', color: 'from-orange-400 to-orange-600' },
+  { letter: 'P', word: 'Penguin', emoji: '🐧', color: 'from-slate-400 to-slate-600' },
+  { letter: 'Q', word: 'Queen', emoji: '👸', color: 'from-violet-400 to-violet-600' },
+  { letter: 'R', word: 'Rabbit', emoji: '🐰', color: 'from-gray-400 to-gray-600' },
+  { letter: 'S', word: 'Star', emoji: '⭐', color: 'from-yellow-400 to-yellow-600' },
+  { letter: 'T', word: 'Tiger', emoji: '🐯', color: 'from-orange-400 to-orange-600' },
+  { letter: 'U', word: 'Umbrella', emoji: '☂️', color: 'from-red-400 to-red-600' },
+  { letter: 'V', word: 'Violin', emoji: '🎻', color: 'from-amber-400 to-amber-600' },
+  { letter: 'W', word: 'Whale', emoji: '🐋', color: 'from-blue-400 to-blue-600' },
+  { letter: 'X', word: 'Xylophone', emoji: '🎵', color: 'from-purple-400 to-purple-600' },
+  { letter: 'Y', word: 'Yacht', emoji: '⛵', color: 'from-cyan-400 to-cyan-600' },
+  { letter: 'Z', word: 'Zebra', emoji: '🦓', color: 'from-gray-400 to-gray-600' }
+];
+
+// Numbers with visual representations
+const numbersWithImages = [
+  { number: 1, word: 'One', emoji: '1️⃣', visual: '🌟', color: 'from-red-400 to-red-600' },
+  { number: 2, word: 'Two', emoji: '2️⃣', visual: '🌟🌟', color: 'from-orange-400 to-orange-600' },
+  { number: 3, word: 'Three', emoji: '3️⃣', visual: '🌟🌟🌟', color: 'from-yellow-400 to-yellow-600' },
+  { number: 4, word: 'Four', emoji: '4️⃣', visual: '🍎🍎🍎🍎', color: 'from-green-400 to-green-600' },
+  { number: 5, word: 'Five', emoji: '5️⃣', visual: '🎈🎈🎈🎈🎈', color: 'from-blue-400 to-blue-600' },
+  { number: 6, word: 'Six', emoji: '6️⃣', visual: '⚽⚽⚽⚽⚽⚽', color: 'from-indigo-400 to-indigo-600' },
+  { number: 7, word: 'Seven', emoji: '7️⃣', visual: '🌈', color: 'from-purple-400 to-purple-600' },
+  { number: 8, word: 'Eight', emoji: '8️⃣', visual: '🐙', color: 'from-pink-400 to-pink-600' },
+  { number: 9, word: 'Nine', emoji: '9️⃣', visual: '🎯', color: 'from-rose-400 to-rose-600' },
+  { number: 10, word: 'Ten', emoji: '🔟', visual: '👐', color: 'from-red-400 to-red-600' },
+];
+
+// Generate numbers 11-100
+for (let i = 11; i <= 100; i++) {
+  const colors = [
+    'from-blue-400 to-blue-600',
+    'from-green-400 to-green-600',
+    'from-purple-400 to-purple-600',
+    'from-pink-400 to-pink-600',
+    'from-orange-400 to-orange-600',
+    'from-cyan-400 to-cyan-600',
+  ];
+  numbersWithImages.push({
+    number: i,
+    word: i.toString(),
+    emoji: `${i}`,
+    visual: i % 10 === 0 ? '🎉' : '🔢',
+    color: colors[i % colors.length]
+  });
+}
 
 export function ContentScreen({ user, onNavigate }: ContentScreenProps) {
   const [selectedCategory, setSelectedCategory] = useState<Category>('alphabets');
@@ -23,19 +83,21 @@ export function ContentScreen({ user, onNavigate }: ContentScreenProps) {
     window.speechSynthesis.cancel();
     
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.8; // Slower speed for kids
+    utterance.rate = 0.7; // Slower speed for kids
     utterance.pitch = 1.2; // Slightly higher pitch for friendly voice
     utterance.volume = 1;
     
     window.speechSynthesis.speak(utterance);
   };
 
-  const filteredAlphabets = alphabets.filter(letter =>
-    letter.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredAlphabets = alphabetsWithImages.filter(item =>
+    item.letter.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.word.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredNumbers = numbers.filter(num =>
-    num.toString().includes(searchQuery)
+  const filteredNumbers = numbersWithImages.filter(item =>
+    item.number.toString().includes(searchQuery) ||
+    item.word.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -138,19 +200,28 @@ export function ContentScreen({ user, onNavigate }: ContentScreenProps) {
                 {filteredAlphabets.length} letters
               </Badge>
             </div>
-            <div className="grid grid-cols-3 gap-3">
-              {filteredAlphabets.map((letter) => (
+            <div className="grid grid-cols-2 gap-4">
+              {filteredAlphabets.map((item) => (
                 <button
-                  key={letter}
-                  onClick={() => speak(letter)}
-                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95 group"
+                  key={item.letter}
+                  onClick={() => speak(`${item.letter} for ${item.word}`)}
+                  className="bg-white rounded-3xl p-5 shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95 group overflow-hidden relative"
                 >
-                  <div className="text-5xl mb-2 group-hover:scale-110 transition-transform">
-                    {letter}
-                  </div>
-                  <div className="flex items-center justify-center gap-1 text-pink-500">
-                    <Volume2 className="size-4" />
-                    <span className="text-xs">Tap to hear</span>
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-10 group-hover:opacity-20 transition-opacity`}></div>
+                  <div className="relative">
+                    <div className="flex items-center justify-center mb-3">
+                      <div className="text-6xl">{item.emoji}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-4xl mb-1 group-hover:scale-110 transition-transform">
+                        {item.letter}
+                      </div>
+                      <div className="text-slate-600 text-sm mb-2">for {item.word}</div>
+                      <div className="flex items-center justify-center gap-1 text-pink-500">
+                        <Volume2 className="size-4" />
+                        <span className="text-xs">Tap to hear</span>
+                      </div>
+                    </div>
                   </div>
                 </button>
               ))}
@@ -170,18 +241,25 @@ export function ContentScreen({ user, onNavigate }: ContentScreenProps) {
                 {filteredNumbers.length} numbers
               </Badge>
             </div>
-            <div className="grid grid-cols-4 gap-2">
-              {filteredNumbers.map((num) => (
+            <div className="grid grid-cols-3 gap-3">
+              {filteredNumbers.map((item) => (
                 <button
-                  key={num}
-                  onClick={() => speak(num.toString())}
-                  className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95 group"
+                  key={item.number}
+                  onClick={() => speak(`${item.number}`)}
+                  className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95 group overflow-hidden relative"
                 >
-                  <div className="text-2xl mb-1 group-hover:scale-110 transition-transform">
-                    {num}
-                  </div>
-                  <div className="flex items-center justify-center text-blue-500">
-                    <Volume2 className="size-3" />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-10 group-hover:opacity-20 transition-opacity`}></div>
+                  <div className="relative">
+                    <div className="text-3xl mb-2">{item.visual}</div>
+                    <div className="text-center">
+                      <div className="text-3xl mb-1 group-hover:scale-110 transition-transform">
+                        {item.number}
+                      </div>
+                      <div className="text-slate-600 text-xs mb-2">{item.word}</div>
+                      <div className="flex items-center justify-center text-blue-500">
+                        <Volume2 className="size-3" />
+                      </div>
+                    </div>
                   </div>
                 </button>
               ))}

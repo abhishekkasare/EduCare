@@ -4,8 +4,7 @@ import {
   Award, 
   BookOpen, 
   Trophy, 
-  Settings, 
-  Bell,
+  Settings,
   HelpCircle,
   LogOut,
   ChevronRight,
@@ -170,15 +169,10 @@ export function ProfileScreen({ user, onNavigate, onLogout }: ProfileScreenProps
         <div>
           <h3 className="text-slate-900 mb-3">Settings</h3>
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <button className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors border-b border-slate-100">
-              <div className="flex items-center gap-3">
-                <Bell className="size-5 text-slate-600" />
-                <span className="text-slate-900">Notifications</span>
-              </div>
-              <ChevronRight className="size-5 text-slate-400" />
-            </button>
-            
-            <button className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors border-b border-slate-100">
+            <button 
+              onClick={() => onNavigate('accountSettings')}
+              className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors border-b border-slate-100"
+            >
               <div className="flex items-center gap-3">
                 <Settings className="size-5 text-slate-600" />
                 <span className="text-slate-900">Account Settings</span>
@@ -186,7 +180,10 @@ export function ProfileScreen({ user, onNavigate, onLogout }: ProfileScreenProps
               <ChevronRight className="size-5 text-slate-400" />
             </button>
             
-            <button className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+            <button 
+              onClick={() => onNavigate('helpSupport')}
+              className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
+            >
               <div className="flex items-center gap-3">
                 <HelpCircle className="size-5 text-slate-600" />
                 <span className="text-slate-900">Help & Support</span>

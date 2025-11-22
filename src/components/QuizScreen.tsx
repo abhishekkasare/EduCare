@@ -5,11 +5,13 @@ import {
   ArrowRight,
   RotateCcw,
   Sparkles,
-  Volume2
+  Volume2,
+  Zap
 } from 'lucide-react';
 import { User, Screen } from '../App';
 import { Button } from './ui/button';
 import { Progress } from './ui/progress';
+import { Badge } from './ui/badge';
 
 interface QuizScreenProps {
   user: User;
@@ -17,83 +19,87 @@ interface QuizScreenProps {
   onUpdatePoints: (points: number) => void;
 }
 
+type Difficulty = 'easy' | 'medium' | 'hard';
+
 interface Question {
   id: number;
   question: string;
   options: string[];
   correctAnswer: number;
-  type: 'alphabet' | 'number' | 'counting';
+  type: 'alphabet' | 'number' | 'counting' | 'math';
+  difficulty: Difficulty;
   emoji: string;
+  points: number;
 }
 
-// Kid-friendly quiz questions
-const generateQuestions = (): Question[] => {
-  return [
-    {
-      id: 1,
-      question: 'Which letter comes after A?',
-      options: ['B', 'C', 'D', 'Z'],
-      correctAnswer: 0,
-      type: 'alphabet',
-      emoji: '🔤'
-    },
-    {
-      id: 2,
-      question: 'Count the stars: ⭐⭐⭐',
-      options: ['2', '3', '4', '5'],
-      correctAnswer: 1,
-      type: 'counting',
-      emoji: '⭐'
-    },
-    {
-      id: 3,
-      question: 'What number comes after 5?',
-      options: ['4', '6', '7', '8'],
-      correctAnswer: 1,
-      type: 'number',
-      emoji: '🔢'
-    },
-    {
-      id: 4,
-      question: 'Which is the first letter of the alphabet?',
-      options: ['B', 'A', 'C', 'Z'],
-      correctAnswer: 1,
-      type: 'alphabet',
-      emoji: '📝'
-    },
-    {
-      id: 5,
-      question: 'Count the apples: 🍎🍎🍎🍎🍎',
-      options: ['3', '4', '5', '6'],
-      correctAnswer: 2,
-      type: 'counting',
-      emoji: '🍎'
-    },
-    {
-      id: 6,
-      question: 'What is 2 + 2?',
-      options: ['3', '4', '5', '6'],
-      correctAnswer: 1,
-      type: 'number',
-      emoji: '➕'
-    },
-    {
-      id: 7,
-      question: 'Which letter comes before C?',
-      options: ['A', 'B', 'D', 'E'],
-      correctAnswer: 1,
-      type: 'alphabet',
-      emoji: '🔤'
-    },
-    {
-      id: 8,
-      question: 'Count the balloons: 🎈🎈',
-      options: ['1', '2', '3', '4'],
-      correctAnswer: 1,
-      type: 'counting',
-      emoji: '🎈'
-    }
-  ];
+// Comprehensive question bank
+const questionBank: Question[] = [
+  // EASY QUESTIONS
+  { id: 1, question: 'Which letter comes after A?', options: ['B', 'C', 'D', 'Z'], correctAnswer: 0, type: 'alphabet', difficulty: 'easy', emoji: '🔤', points: 50 },
+  { id: 2, question: 'Count the stars: ⭐⭐⭐', options: ['2', '3', '4', '5'], correctAnswer: 1, type: 'counting', difficulty: 'easy', emoji: '⭐', points: 50 },
+  { id: 3, question: 'What number comes after 5?', options: ['4', '6', '7', '8'], correctAnswer: 1, type: 'number', difficulty: 'easy', emoji: '🔢', points: 50 },
+  { id: 4, question: 'Which is the first letter of the alphabet?', options: ['B', 'A', 'C', 'Z'], correctAnswer: 1, type: 'alphabet', difficulty: 'easy', emoji: '📝', points: 50 },
+  { id: 5, question: 'Count the apples: 🍎🍎🍎🍎🍎', options: ['3', '4', '5', '6'], correctAnswer: 2, type: 'counting', difficulty: 'easy', emoji: '🍎', points: 50 },
+  { id: 6, question: 'What is 1 + 1?', options: ['1', '2', '3', '4'], correctAnswer: 1, type: 'math', difficulty: 'easy', emoji: '➕', points: 50 },
+  { id: 7, question: 'Count the balloons: 🎈🎈', options: ['1', '2', '3', '4'], correctAnswer: 1, type: 'counting', difficulty: 'easy', emoji: '🎈', points: 50 },
+  { id: 8, question: 'What comes before B?', options: ['A', 'C', 'D', 'E'], correctAnswer: 0, type: 'alphabet', difficulty: 'easy', emoji: '🔤', points: 50 },
+  { id: 9, question: 'How many hearts? ❤️', options: ['0', '1', '2', '3'], correctAnswer: 1, type: 'counting', difficulty: 'easy', emoji: '❤️', points: 50 },
+  { id: 10, question: 'What is 2 + 1?', options: ['1', '2', '3', '4'], correctAnswer: 2, type: 'math', difficulty: 'easy', emoji: '➕', points: 50 },
+  { id: 11, question: 'Which letter comes after C?', options: ['A', 'B', 'D', 'E'], correctAnswer: 2, type: 'alphabet', difficulty: 'easy', emoji: '🔤', points: 50 },
+  { id: 12, question: 'Count the dogs: 🐕🐕🐕🐕', options: ['3', '4', '5', '6'], correctAnswer: 1, type: 'counting', difficulty: 'easy', emoji: '🐕', points: 50 },
+  { id: 13, question: 'What number is this? 🔟', options: ['5', '10', '15', '20'], correctAnswer: 1, type: 'number', difficulty: 'easy', emoji: '🔢', points: 50 },
+  { id: 14, question: 'What is the last letter of the alphabet?', options: ['X', 'Y', 'Z', 'W'], correctAnswer: 2, type: 'alphabet', difficulty: 'easy', emoji: '🔤', points: 50 },
+  { id: 15, question: 'Count the cats: 🐱🐱🐱', options: ['2', '3', '4', '5'], correctAnswer: 1, type: 'counting', difficulty: 'easy', emoji: '🐱', points: 50 },
+  
+  // MEDIUM QUESTIONS
+  { id: 16, question: 'What is 2 + 2?', options: ['3', '4', '5', '6'], correctAnswer: 1, type: 'math', difficulty: 'medium', emoji: '➕', points: 75 },
+  { id: 17, question: 'Which letter comes before C?', options: ['A', 'B', 'D', 'E'], correctAnswer: 1, type: 'alphabet', difficulty: 'medium', emoji: '🔤', points: 75 },
+  { id: 18, question: 'What is 5 - 2?', options: ['2', '3', '4', '5'], correctAnswer: 1, type: 'math', difficulty: 'medium', emoji: '➖', points: 75 },
+  { id: 19, question: 'Count ALL the fruits: 🍎🍊🍎🍊🍎🍊', options: ['4', '5', '6', '7'], correctAnswer: 2, type: 'counting', difficulty: 'medium', emoji: '🍎', points: 75 },
+  { id: 20, question: 'What comes after 10?', options: ['9', '10', '11', '12'], correctAnswer: 2, type: 'number', difficulty: 'medium', emoji: '🔢', points: 75 },
+  { id: 21, question: 'Which letter is between F and H?', options: ['E', 'F', 'G', 'H'], correctAnswer: 2, type: 'alphabet', difficulty: 'medium', emoji: '🔤', points: 75 },
+  { id: 22, question: 'What is 3 + 3?', options: ['5', '6', '7', '8'], correctAnswer: 1, type: 'math', difficulty: 'medium', emoji: '➕', points: 75 },
+  { id: 23, question: 'Count the items: ⚽🎈⚽🎈⚽', options: ['4', '5', '6', '7'], correctAnswer: 1, type: 'counting', difficulty: 'medium', emoji: '⚽', points: 75 },
+  { id: 24, question: 'What is 4 + 2?', options: ['5', '6', '7', '8'], correctAnswer: 1, type: 'math', difficulty: 'medium', emoji: '➕', points: 75 },
+  { id: 25, question: 'Which vowel comes after I?', options: ['A', 'E', 'O', 'U'], correctAnswer: 2, type: 'alphabet', difficulty: 'medium', emoji: '🔤', points: 75 },
+  { id: 26, question: 'What is 7 - 3?', options: ['3', '4', '5', '6'], correctAnswer: 1, type: 'math', difficulty: 'medium', emoji: '➖', points: 75 },
+  { id: 27, question: 'Count: 🌟🌟🌟🌟🌟🌟🌟', options: ['5', '6', '7', '8'], correctAnswer: 2, type: 'counting', difficulty: 'medium', emoji: '🌟', points: 75 },
+  { id: 28, question: 'What comes before 20?', options: ['18', '19', '20', '21'], correctAnswer: 1, type: 'number', difficulty: 'medium', emoji: '🔢', points: 75 },
+  { id: 29, question: 'What is 5 + 3?', options: ['6', '7', '8', '9'], correctAnswer: 2, type: 'math', difficulty: 'medium', emoji: '➕', points: 75 },
+  { id: 30, question: 'Which letter is between M and O?', options: ['L', 'M', 'N', 'O'], correctAnswer: 2, type: 'alphabet', difficulty: 'medium', emoji: '🔤', points: 75 },
+  
+  // HARD QUESTIONS
+  { id: 31, question: 'What is 5 + 5?', options: ['8', '9', '10', '11'], correctAnswer: 2, type: 'math', difficulty: 'hard', emoji: '➕', points: 100 },
+  { id: 32, question: 'Which letter comes 3 letters after M?', options: ['N', 'O', 'P', 'Q'], correctAnswer: 2, type: 'alphabet', difficulty: 'hard', emoji: '🔤', points: 100 },
+  { id: 33, question: 'What is 10 - 4?', options: ['5', '6', '7', '8'], correctAnswer: 1, type: 'math', difficulty: 'hard', emoji: '➖', points: 100 },
+  { id: 34, question: 'Count all: 🍎🍊🍎🍊🍎🍊🍎🍊🍎', options: ['7', '8', '9', '10'], correctAnswer: 2, type: 'counting', difficulty: 'hard', emoji: '🍎', points: 100 },
+  { id: 35, question: 'What comes after 25?', options: ['24', '25', '26', '27'], correctAnswer: 2, type: 'number', difficulty: 'hard', emoji: '🔢', points: 100 },
+  { id: 36, question: 'What is 6 + 6?', options: ['10', '11', '12', '13'], correctAnswer: 2, type: 'math', difficulty: 'hard', emoji: '➕', points: 100 },
+  { id: 37, question: 'Which vowel comes before O?', options: ['A', 'E', 'I', 'U'], correctAnswer: 2, type: 'alphabet', difficulty: 'hard', emoji: '🔤', points: 100 },
+  { id: 38, question: 'What is 9 - 5?', options: ['3', '4', '5', '6'], correctAnswer: 1, type: 'math', difficulty: 'hard', emoji: '➖', points: 100 },
+  { id: 39, question: 'Count: 🎈🎈🎈🎈🎈🎈🎈🎈', options: ['6', '7', '8', '9'], correctAnswer: 2, type: 'counting', difficulty: 'hard', emoji: '🎈', points: 100 },
+  { id: 40, question: 'What is 7 + 7?', options: ['12', '13', '14', '15'], correctAnswer: 2, type: 'math', difficulty: 'hard', emoji: '➕', points: 100 },
+  { id: 41, question: 'Which letter is 2 letters before T?', options: ['P', 'Q', 'R', 'S'], correctAnswer: 2, type: 'alphabet', difficulty: 'hard', emoji: '🔤', points: 100 },
+  { id: 42, question: 'What is 8 + 4?', options: ['10', '11', '12', '13'], correctAnswer: 2, type: 'math', difficulty: 'hard', emoji: '➕', points: 100 },
+  { id: 43, question: 'What comes before 50?', options: ['48', '49', '50', '51'], correctAnswer: 1, type: 'number', difficulty: 'hard', emoji: '🔢', points: 100 },
+  { id: 44, question: 'What is 10 - 7?', options: ['2', '3', '4', '5'], correctAnswer: 1, type: 'math', difficulty: 'hard', emoji: '➖', points: 100 },
+  { id: 45, question: 'Count: 🌟🌟🌟🌟🌟🌟🌟🌟🌟🌟', options: ['8', '9', '10', '11'], correctAnswer: 2, type: 'counting', difficulty: 'hard', emoji: '🌟', points: 100 },
+];
+
+// Function to randomly select 10 questions with mixed difficulty
+const getRandomQuestions = (): Question[] => {
+  const easy = questionBank.filter(q => q.difficulty === 'easy');
+  const medium = questionBank.filter(q => q.difficulty === 'medium');
+  const hard = questionBank.filter(q => q.difficulty === 'hard');
+  
+  // Select 4 easy, 4 medium, 2 hard questions
+  const selectedEasy = easy.sort(() => Math.random() - 0.5).slice(0, 4);
+  const selectedMedium = medium.sort(() => Math.random() - 0.5).slice(0, 4);
+  const selectedHard = hard.sort(() => Math.random() - 0.5).slice(0, 2);
+  
+  // Combine and shuffle
+  const allQuestions = [...selectedEasy, ...selectedMedium, ...selectedHard];
+  return allQuestions.sort(() => Math.random() - 0.5);
 };
 
 type QuizState = 'start' | 'playing' | 'result';
@@ -109,7 +115,7 @@ export function QuizScreen({ user, onNavigate, onUpdatePoints }: QuizScreenProps
 
   useEffect(() => {
     if (quizState === 'start') {
-      setQuestions(generateQuestions());
+      setQuestions(getRandomQuestions());
     }
   }, [quizState]);
 
@@ -122,7 +128,7 @@ export function QuizScreen({ user, onNavigate, onUpdatePoints }: QuizScreenProps
   };
 
   const handleStartQuiz = () => {
-    const newQuestions = generateQuestions();
+    const newQuestions = getRandomQuestions();
     setQuestions(newQuestions);
     setQuizState('playing');
     setCurrentQuestion(0);
@@ -163,9 +169,14 @@ export function QuizScreen({ user, onNavigate, onUpdatePoints }: QuizScreenProps
         setShowFeedback(false);
       } else {
         setQuizState('result');
-        const finalScore = newAnswers.filter((answer, index) => answer === questions[index].correctAnswer).length;
-        const pointsEarned = finalScore * 50;
+        const pointsEarned = newAnswers.reduce((total, answer, index) => {
+          if (answer === questions[index].correctAnswer) {
+            return total + questions[index].points;
+          }
+          return total;
+        }, 0);
         onUpdatePoints(pointsEarned);
+        const finalScore = newAnswers.filter((answer, index) => answer === questions[index].correctAnswer).length;
         if (finalScore >= questions.length * 0.7) {
           speak('Wow! You did amazing! You\'re a superstar!');
         } else {
@@ -184,10 +195,35 @@ export function QuizScreen({ user, onNavigate, onUpdatePoints }: QuizScreenProps
     return answers.filter((answer, index) => answer === questions[index].correctAnswer).length;
   };
 
+  const calculateTotalPoints = () => {
+    return answers.reduce((total, answer, index) => {
+      if (answer === questions[index].correctAnswer) {
+        return total + questions[index].points;
+      }
+      return total;
+    }, 0);
+  };
+
+  const getDifficultyColor = (difficulty: Difficulty) => {
+    switch (difficulty) {
+      case 'easy': return 'bg-green-500';
+      case 'medium': return 'bg-yellow-500';
+      case 'hard': return 'bg-red-500';
+    }
+  };
+
+  const getDifficultyLabel = (difficulty: Difficulty) => {
+    switch (difficulty) {
+      case 'easy': return '⭐ Easy';
+      case 'medium': return '⭐⭐ Medium';
+      case 'hard': return '⭐⭐⭐ Hard';
+    }
+  };
+
   const score = calculateScore();
   const percentage = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
   const progress = questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0;
-  const earnedPoints = score * 50;
+  const earnedPoints = calculateTotalPoints();
 
   // Start Screen
   if (quizState === 'start') {
@@ -205,7 +241,7 @@ export function QuizScreen({ user, onNavigate, onUpdatePoints }: QuizScreenProps
             Fun Quiz Time! 🎉
           </h1>
           <p className="text-slate-600 text-center mb-8 text-lg">
-            Answer questions and collect stars!
+            Answer 10 random questions and collect stars!
           </p>
 
           <div className="w-full max-w-sm space-y-4 mb-8">
@@ -215,18 +251,23 @@ export function QuizScreen({ user, onNavigate, onUpdatePoints }: QuizScreenProps
                   <Sparkles className="size-8 text-white" />
                 </div>
                 <div>
-                  <p className="text-slate-900 text-lg">Fun Questions</p>
-                  <p className="text-slate-600">Answer and learn!</p>
+                  <p className="text-slate-900 text-lg">10 Questions</p>
+                  <p className="text-slate-600">Random every time!</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
-                <div className="bg-gradient-to-br from-green-400 to-emerald-400 rounded-2xl p-4">
-                  <Star className="size-8 text-white fill-white" />
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <Badge className="bg-green-500">⭐ Easy</Badge>
+                  <span className="text-slate-600 text-sm">50 points each</span>
                 </div>
-                <div>
-                  <p className="text-slate-900 text-lg">Earn Points</p>
-                  <p className="text-slate-600">50 points per answer!</p>
+                <div className="flex items-center gap-3">
+                  <Badge className="bg-yellow-500">⭐⭐ Medium</Badge>
+                  <span className="text-slate-600 text-sm">75 points each</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Badge className="bg-red-500">⭐⭐⭐ Hard</Badge>
+                  <span className="text-slate-600 text-sm">100 points each</span>
                 </div>
               </div>
             </div>
@@ -273,7 +314,7 @@ export function QuizScreen({ user, onNavigate, onUpdatePoints }: QuizScreenProps
           <div className="w-full max-w-sm bg-white rounded-3xl p-8 shadow-xl mb-8">
             <div className="text-center mb-6">
               <div className="text-7xl mb-4">{percentage >= 70 ? '⭐' : '🌟'}</div>
-              <div className="text-6xl mb-2">{score}/{questions.length}</div>
+              <div className="text-6xl mb-2">{score}/10</div>
               <p className="text-slate-600 text-lg">Correct Answers!</p>
             </div>
 
@@ -286,9 +327,9 @@ export function QuizScreen({ user, onNavigate, onUpdatePoints }: QuizScreenProps
                 <span className="text-orange-600 text-2xl">+{earnedPoints}</span>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-5 gap-2">
                 {[...Array(score)].map((_, i) => (
-                  <div key={i} className="text-center text-4xl animate-bounce" style={{ animationDelay: `${i * 100}ms` }}>
+                  <div key={i} className="text-center text-3xl animate-bounce" style={{ animationDelay: `${i * 100}ms` }}>
                     ⭐
                   </div>
                 ))}
@@ -337,11 +378,17 @@ export function QuizScreen({ user, onNavigate, onUpdatePoints }: QuizScreenProps
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-500 to-pink-500 px-6 pt-8 pb-6 rounded-b-3xl">
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-white/90 text-sm">Question {currentQuestion + 1} of {questions.length}</p>
-            <h2 className="text-white text-2xl flex items-center gap-2">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <p className="text-white/90 text-sm">Question {currentQuestion + 1} of 10</p>
+              <Badge className={getDifficultyColor(question.difficulty)}>
+                {getDifficultyLabel(question.difficulty)}
+              </Badge>
+            </div>
+            <h2 className="text-white text-xl flex items-center gap-2">
               <span>{question.emoji}</span>
               <span>Quiz Time!</span>
+              <Zap className="size-5 text-yellow-300" />
             </h2>
           </div>
           <button
@@ -355,11 +402,11 @@ export function QuizScreen({ user, onNavigate, onUpdatePoints }: QuizScreenProps
         <Progress value={progress} className="h-3 bg-white/20 rounded-full" />
         
         {/* Star Progress */}
-        <div className="flex gap-2 mt-3 justify-center">
-          {questions.map((_, index) => (
+        <div className="flex gap-2 mt-3 justify-center flex-wrap">
+          {questions.map((q, index) => (
             <div
               key={index}
-              className={`size-8 rounded-full flex items-center justify-center transition-all ${
+              className={`size-7 rounded-full flex items-center justify-center transition-all ${
                 index < currentQuestion
                   ? answers[index] === questions[index].correctAnswer
                     ? 'bg-yellow-400 scale-110'
@@ -370,7 +417,7 @@ export function QuizScreen({ user, onNavigate, onUpdatePoints }: QuizScreenProps
               }`}
             >
               {index < currentQuestion && answers[index] === questions[index].correctAnswer && (
-                <Star className="size-5 fill-white text-white" />
+                <Star className="size-4 fill-white text-white" />
               )}
             </div>
           ))}
@@ -380,7 +427,12 @@ export function QuizScreen({ user, onNavigate, onUpdatePoints }: QuizScreenProps
       {/* Question */}
       <div className="px-6 py-6">
         <div className="bg-white rounded-3xl p-6 shadow-xl mb-6">
-          <h3 className="text-slate-900 text-2xl mb-6 text-center">{question.question}</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-slate-900 text-2xl text-center flex-1">{question.question}</h3>
+            <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl px-3 py-2 ml-2">
+              <p className="text-purple-700 text-sm">+{question.points}</p>
+            </div>
+          </div>
           
           <div className="grid grid-cols-2 gap-4">
             {question.options.map((option, index) => {
@@ -448,7 +500,7 @@ export function QuizScreen({ user, onNavigate, onUpdatePoints }: QuizScreenProps
               {isCorrect ? '🎉 Correct!' : '💪 Keep trying!'}
             </p>
             <p className="text-white">
-              {isCorrect ? 'You\'re amazing!' : 'You\'ll get it next time!'}
+              {isCorrect ? `You earned ${question.points} points!` : 'You\'ll get it next time!'}
             </p>
           </div>
         )}
